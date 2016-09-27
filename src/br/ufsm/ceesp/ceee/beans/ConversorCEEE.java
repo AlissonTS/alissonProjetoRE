@@ -31,6 +31,9 @@ public class ConversorCEEE {
         ArrayList<Subestacao> sub = new ArrayList<Subestacao>();
         ArrayList<TrechoRede> trecho = new ArrayList<TrechoRede>();
         ArrayList<Barra> barra = new ArrayList<Barra>();
+        ArrayList<Transformador> tr = new ArrayList<Transformador>();
+        ArrayList<Chave> cha = new ArrayList<Chave>();
+        ArrayList<Regulador> reg = new ArrayList<Regulador>();
 
         ArrayList<Long> br = null;
 
@@ -46,7 +49,7 @@ public class ConversorCEEE {
         Alimentador alimentador = null;
         Subestacao subestacao = null;
 
-        while(retorno != null && laco<=20) {
+        while(retorno != null && laco<=40) {
 
             retorno = csv.nextLine(true);
 
@@ -77,6 +80,18 @@ public class ConversorCEEE {
                     barraAlvo.setId(Barra.getNextId());
                     barraAlvo.setParCoordenadas(coord_Alvo);
                     alimentador.getBarras().put(coord_Alvo, barraAlvo);
+
+
+                    String instal_trafo = retorno[24].replace(" ", "").trim();
+                    if(instal_trafo.length()>0){
+                        Transformador trafo = new Transformador();
+                        trafo.setBarra(barraAlvo);
+
+                        trafo.setId(new Long(instal_trafo));
+                        barraAlvo.setTransformador(trafo);
+
+                        tr.add(trafo);
+                    }
                 }
 
                 TrechoRede trehoRede = new TrechoRede();
@@ -97,6 +112,29 @@ public class ConversorCEEE {
                     material = "CAZ";
                 }
                 trehoRede.setCondutor(trehoRede.getQtdFases() + "#" + retorno[12] + material);
+
+                String ch = retorno[25].replace(" ", "").trim();
+                if(ch.length()>0){
+                    Chave chave = new Chave();
+                    chave.setId(new Long(ch));
+                    chave.setTrecho(trehoRede);
+
+                    trehoRede.setChave(chave);
+
+                    cha.add(chave);
+                }
+
+                String re = retorno[26].replace(" ", "").trim();
+                if(re.length()>0){
+                    Regulador regulador = new Regulador();
+                    regulador.setId(new Long(re));
+                    regulador.setTrecho(trehoRede);
+
+                    trehoRede.setRegulador(regulador);
+
+                    reg.add(regulador);
+                }
+
                 alimentador.getTrechos().put(trehoRede.getId(), trehoRede);
 
                 if(contador==0) {
@@ -173,7 +211,7 @@ public class ConversorCEEE {
             fw.write(" ; ; ; ; ; ; ; ; ; ; ; ; ;\r\n");
 
             fw.write("CIRCUITO;\r\n");
-            fw.write(al.get(0).getNome()+"; ; ;"+sub.get(0).getID()+"; ; ; ;\r\n");
+            fw.write(al.get(0).getNome()+"; ; ; "+sub.get(0).getID()+"; ; ; ;\r\n");
 
             // FOR COM LISTA DE BARRAS
 
@@ -202,13 +240,22 @@ public class ConversorCEEE {
             fw.write("CAMPOS A DEFINIR;\r\n");
 
             fw.write("INSTAL_TRAFO;\r\n");
-            fw.write("CAMPOS A DEFINIR;\r\n");
+            for(int i=0; i<tr.size(); i++){
+                fw.write(tr.get(i).getId()+";  ;  ;  ; "+tr.get(i).getBarra().getId()+";  ;  ;  ;  ;  ;  ;  ;  ; \r\n");
+            }
+            //
 
             fw.write("CHAVE;\r\n");
-            fw.write("CAMPOS A DEFINIR;\r\n");
+            for(int i=0; i<cha.size(); i++){
+                fw.write(cha.get(i).getId()+";  ;  ; "+cha.get(i).getTrecho().getId()+";  ;  ;  ;  ;  ;  ;  ;  ;  ;  ;  ;\r\n");
+            }
+            //
 
             fw.write("REGULADOR;\r\n");
-            fw.write("CAMPOS A DEFINIR;\r\n");
+            for(int i=0; i<reg.size(); i++){
+                fw.write(reg.get(i).getId()+";  ;  ;  ; "+reg.get(i).getTrecho().getId()+";  ;  ;  ;  ;  ;  ;\r\n");
+            }
+            //
 
             fw.write("CUST_CLASS;\r\n");
             fw.write("CAMPOS A DEFINIR;\r\n");
@@ -247,6 +294,7 @@ public class ConversorCEEE {
             fw.write("END;\r\n");
 
             fw.close();
+            System.out.println("Arquivo preenchido..");
         } catch (IOException e) {
             e.printStackTrace();
         }

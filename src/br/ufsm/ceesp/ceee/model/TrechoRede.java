@@ -12,6 +12,8 @@ public class TrechoRede {
     private String condutor;
     private String fases;
     private Integer qtdFases;
+    private Chave chave;
+    private Regulador regulador;
 
     public String getFases() {
         return fases;
@@ -75,4 +77,19 @@ public class TrechoRede {
         return ID++;
     }
 
+    public Chave getChave() {
+        return chave;
+    }
+
+    public void setChave(Chave chave) {
+        this.chave = chave;
+    }
+
+    public Regulador getRegulador() {
+        return regulador;
+    }
+
+    public void setRegulador(Regulador regulador) {
+        this.regulador = regulador;
+    }
 }
