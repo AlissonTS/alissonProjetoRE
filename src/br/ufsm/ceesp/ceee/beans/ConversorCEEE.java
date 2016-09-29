@@ -208,12 +208,12 @@ public class ConversorCEEE {
             fw.write(sub.get(0).getID()+"; ; ; "+sub.get(0).getNome()+" ; ; \r\n");
 
             fw.write("TRAFO_SE;\r\n");
-            fw.write(" ; ; ; ; ; ; ; ; ; ; ; ; ;\r\n");
+            fw.write(" ; ; ; ; ; ; 13,800; ; ; ; ; ; "+sub.get(0).getID()+";\r\n");
 
             fw.write("CIRCUITO;\r\n");
             fw.write(al.get(0).getNome()+"; ; ; "+sub.get(0).getID()+"; ; ; ;\r\n");
 
-            // FOR COM LISTA DE BARRAS
+            //LISTA DE BARRAS
 
             fw.write("BARRA;\r\n");
 
@@ -224,7 +224,7 @@ public class ConversorCEEE {
 
             //
 
-            // FOR COM LISTA DE TRECHOS
+            // LISTA DE TRECHOS
 
             fw.write("TRECHO;\r\n");
 
@@ -257,40 +257,52 @@ public class ConversorCEEE {
             }
             //
 
+            //
             fw.write("CUST_CLASS;\r\n");
             fw.write("CAMPOS A DEFINIR;\r\n");
 
+            //
             fw.write("DMD;\r\n");
             fw.write("CAMPOS A DEFINIR;\r\n");
 
+            //
             fw.write("TRAFOL;\r\n");
             fw.write("CAMPOS A DEFINIR;\r\n");
 
+            //
             fw.write("CAPS;\r\n");
             fw.write("CAMPOS A DEFINIR;\r\n");
 
+            //
             fw.write("ET;\r\n");
             fw.write("BARRA BT;\r\n");
             fw.write("\r\n");
 
+            //
             fw.write("TRECHO_BT;\r\n");
             fw.write("\r\n");
 
+            //
             fw.write("PONTO_SERVICO_BT;\r\n");
             fw.write("\r\n");
 
+            //
             fw.write("CONSUMIDOR_BT;\r\n");
             fw.write("\r\n");
 
+            //
             fw.write("CONSUMIDOR_IP;\r\n");
             fw.write("\r\n");
 
+            //
             fw.write("CONSUMIDOR_MT;\r\n");
             fw.write("\r\n");
 
+            //
             fw.write("SOCO;\r\n");
             fw.write("\r\n");
 
+            //
             fw.write("END;\r\n");
 
             fw.close();
