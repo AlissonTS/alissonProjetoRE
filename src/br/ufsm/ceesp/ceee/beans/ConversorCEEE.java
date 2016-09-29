@@ -22,6 +22,7 @@ public class ConversorCEEE {
             arquivo = new FileInputStream(f);
         }
 
+        // Funcionando em CSV e TXT
 
         LeitorCSV csv = new LeitorCSV(arquivo);
 
@@ -39,6 +40,7 @@ public class ConversorCEEE {
         ArrayList<Long> br = null;
 
         retorno = csv.nextLine(true);
+        retorno = csv.nextLine(true);
 
         /*for(String ret: retorno){
             System.out.print(ret+ " ");
@@ -50,10 +52,8 @@ public class ConversorCEEE {
         Alimentador alimentador = null;
         Subestacao subestacao = null;
 
-        while(retorno != null && laco<=200) {
-
-            retorno = csv.nextLine(true);
-
+        System.out.println("Carregando Linhas...");
+        do{
             if (retorno.length > 0) {
 
                 if (alimentador == null) {
@@ -194,7 +194,8 @@ public class ConversorCEEE {
                 }
 
             }
-        }
+            retorno = csv.nextLine(true);
+        }while(retorno != null);
 
         File saida = new File(f.getAbsolutePath() + ".ceee.exp");
         if(!saida.exists()) {
