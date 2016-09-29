@@ -24,9 +24,4 @@ public class Regulador {
             this.trecho = trecho;
         }
 
-        private static long ID = 1;
-
-        public static long getNextId() {
-            return ID++;
-        }
 }

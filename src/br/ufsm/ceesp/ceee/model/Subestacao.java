@@ -6,7 +6,7 @@ package br.ufsm.ceesp.ceee.model;
 public class Subestacao {
 
     private String nome;
-
+    private Barra barra;
 
     public String getNome() {
         return nome;
@@ -28,5 +28,13 @@ public class Subestacao {
 
     public void setID(long id){
         this.ID = id;
+    }
+
+    public Barra getBarra() {
+        return barra;
+    }
+
+    public void setBarra(Barra barra) {
+        this.barra = barra;
     }
 }

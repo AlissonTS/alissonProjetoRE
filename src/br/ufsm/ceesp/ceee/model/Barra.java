@@ -8,6 +8,7 @@ public class Barra {
     private Long id;
     private ParCoordenadas parCoordenadas;
     private Transformador transformador;
+    private Capacitor capacitor;
 
     public ParCoordenadas getParCoordenadas() {
         return parCoordenadas;
@@ -32,6 +33,14 @@ public class Barra {
 
     public void setTransformador(Transformador transformador) {
         this.transformador = transformador;
+    }
+
+    public Capacitor getCapacitor() {
+        return capacitor;
+    }
+
+    public void setCapacitor(Capacitor capacitor) {
+        this.capacitor = capacitor;
     }
 
 

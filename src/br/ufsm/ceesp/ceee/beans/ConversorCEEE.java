@@ -34,6 +34,7 @@ public class ConversorCEEE {
         ArrayList<Transformador> tr = new ArrayList<Transformador>();
         ArrayList<Chave> cha = new ArrayList<Chave>();
         ArrayList<Regulador> reg = new ArrayList<Regulador>();
+        ArrayList<Capacitor> capacitor = new ArrayList<Capacitor>();
 
         ArrayList<Long> br = null;
 
@@ -49,15 +50,11 @@ public class ConversorCEEE {
         Alimentador alimentador = null;
         Subestacao subestacao = null;
 
-        while(retorno != null && laco<=40) {
+        while(retorno != null && laco<=200) {
 
             retorno = csv.nextLine(true);
 
             if (retorno.length > 0) {
-                if(subestacao == null){
-                    subestacao = new Subestacao();
-                    subestacao.setNome(retorno[0]);
-                }
 
                 if (alimentador == null) {
                     alimentador = new Alimentador();
@@ -74,6 +71,12 @@ public class ConversorCEEE {
                     alimentador.getBarras().put(coord_Fonte, barraFonte);
                 }
 
+                if(subestacao == null){
+                    subestacao = new Subestacao();
+                    subestacao.setNome(retorno[0]);
+                    subestacao.setBarra(barraFonte);
+                }
+
                 Barra barraAlvo = alimentador.getBarras().get(coord_Alvo);
                 if (barraAlvo == null) {
                     barraAlvo = new Barra();
@@ -82,7 +85,7 @@ public class ConversorCEEE {
                     alimentador.getBarras().put(coord_Alvo, barraAlvo);
 
 
-                    String instal_trafo = retorno[24].replace(" ", "").trim();
+                    String instal_trafo = retorno[24];
                     if(instal_trafo.length()>0){
                         Transformador trafo = new Transformador();
                         trafo.setBarra(barraAlvo);
@@ -91,6 +94,18 @@ public class ConversorCEEE {
                         barraAlvo.setTransformador(trafo);
 
                         tr.add(trafo);
+                    }
+
+                    String capac = retorno[27];
+                    if(barraAlvo ==  null){
+                        Capacitor cp = new Capacitor();
+
+                        cp.setBarra(barraAlvo);
+
+                        cp.setID(new Long(capac));
+                        barraAlvo.setCapacitor(cp);
+
+                        capacitor.add(cp);
                     }
                 }
 
@@ -116,7 +131,7 @@ public class ConversorCEEE {
                 String ch = retorno[25].replace(" ", "").trim();
                 if(ch.length()>0){
                     Chave chave = new Chave();
-                    chave.setId(new Long(ch));
+                    chave.setId(ch);
                     chave.setTrecho(trehoRede);
 
                     trehoRede.setChave(chave);
@@ -124,10 +139,10 @@ public class ConversorCEEE {
                     cha.add(chave);
                 }
 
-                String re = retorno[26].replace(" ", "").trim();
+                String re = retorno[26];
                 if(re.length()>0){
                     Regulador regulador = new Regulador();
-                    regulador.setId(new Long(re));
+                    regulador.setId(new Long (re));
                     regulador.setTrecho(trehoRede);
 
                     trehoRede.setRegulador(regulador);
@@ -205,20 +220,21 @@ public class ConversorCEEE {
             fw.write("VER;\r\n4.0;\r\n\r\n");
 
             fw.write("SE;\r\n");
-            fw.write(sub.get(0).getID()+"; ; ; "+sub.get(0).getNome()+" ; ; \r\n");
+            fw.write(sub.get(0).getID()+";\t ;\t; "+sub.get(0).getNome()+";\t "+
+                    sub.get(0).getBarra().getParCoordenadas().getLatitude()+";\t"+sub.get(0).getBarra().getParCoordenadas().getLongitude() +";\t ;\t;\r\n");
 
             fw.write("TRAFO_SE;\r\n");
-            fw.write(" ; ; ; ; ; ; 13,800; ; ; ; ; ; "+sub.get(0).getID()+";\r\n");
+            fw.write("1;\t;\t ;\t ;\t ;\t ;\t13.800; \t ;\t ;\t ;\t ;\t ;\t "+sub.get(0).getID()+";\r\n");
 
             fw.write("CIRCUITO;\r\n");
-            fw.write(al.get(0).getNome()+"; ; ; "+sub.get(0).getID()+"; ; ; ;\r\n");
+            fw.write(al.get(0).getNome()+";\t\t ;\t\t ;\t\t "+sub.get(0).getID()+";\t\t 1;\t\t 13.000;\t\t ;\r\n");
 
             //LISTA DE BARRAS
 
             fw.write("BARRA;\r\n");
 
             for(int i=0; i<barra.size(); i++){
-                fw.write(barra.get(i).getId()+"; "+barra.get(i).getParCoordenadas().getLatitude()+"; "
+                fw.write(barra.get(i).getId()+";\t\t "+barra.get(i).getParCoordenadas().getLatitude()+"; "
                         +barra.get(i).getParCoordenadas().getLongitude()+"; \r\n");
             }
 
@@ -229,25 +245,28 @@ public class ConversorCEEE {
             fw.write("TRECHO;\r\n");
 
             for(int i=0; i<trecho.size(); i++){
-                fw.write(trecho.get(i).getId()+"; ; ; ; "+trecho.get(i).getBarraInicial().getId()+"; "
-                        +trecho.get(i).getBarraFinal().getId()+"; ; ; "
-                        +trecho.get(i).getCondutor()+"; ; ; "+trecho.get(i).getQtdFases()+"; "
+                fw.write(trecho.get(i).getId()+";\t ;\t ;\t ;\t "+trecho.get(i).getBarraInicial().getId()+"; "
+                        +trecho.get(i).getBarraFinal().getId()+";\t ;\t ;\t "
+                        +trecho.get(i).getCondutor()+";\t ;\t ;\t "+trecho.get(i).getQtdFases()+"; "
                         +trecho.get(i).getComprimento()+"; ; \r\n");
             }
             //
 
             fw.write("CAPACITOR;\r\n");
-            fw.write("CAMPOS A DEFINIR;\r\n");
+            for(int i=0; i<capacitor.size(); i++){
+                fw.write(capacitor.get(i).getID()+";  ;  ;  ; "+tr.get(i).getBarra().getId()+";  ; 1.200; 1.200; 1.200; 1.200;\r\n");
+            }
+            //
 
             fw.write("INSTAL_TRAFO;\r\n");
             for(int i=0; i<tr.size(); i++){
-                fw.write(tr.get(i).getId()+";  ;  ;  ; "+tr.get(i).getBarra().getId()+";  ;  ;  ;  ;  ;  ;  ;  ; \r\n");
+                fw.write(tr.get(i).getId()+";  ;  ;  ; "+tr.get(i).getBarra().getId()+";  ;  ;  ;  ;  ;  ;  ;  ;\r\n");
             }
             //
 
             fw.write("CHAVE;\r\n");
             for(int i=0; i<cha.size(); i++){
-                fw.write(cha.get(i).getId()+";  ;  ; "+cha.get(i).getTrecho().getId()+";  ;  ;  ;  ;  ;  ;  ;  ;  ;  ;  ;\r\n");
+                fw.write(cha.get(i).getId()+";  ;  ; "+cha.get(i).getTrecho().getId()+"; FU;  ;  ;  ;  ;  ;  ;  ;  ;  ;  ;\r\n");
             }
             //
 
@@ -255,52 +274,6 @@ public class ConversorCEEE {
             for(int i=0; i<reg.size(); i++){
                 fw.write(reg.get(i).getId()+";  ;  ;  ; "+reg.get(i).getTrecho().getId()+";  ;  ;  ;  ;  ;  ;\r\n");
             }
-            //
-
-            //
-            fw.write("CUST_CLASS;\r\n");
-            fw.write("CAMPOS A DEFINIR;\r\n");
-
-            //
-            fw.write("DMD;\r\n");
-            fw.write("CAMPOS A DEFINIR;\r\n");
-
-            //
-            fw.write("TRAFOL;\r\n");
-            fw.write("CAMPOS A DEFINIR;\r\n");
-
-            //
-            fw.write("CAPS;\r\n");
-            fw.write("CAMPOS A DEFINIR;\r\n");
-
-            //
-            fw.write("ET;\r\n");
-            fw.write("BARRA BT;\r\n");
-            fw.write("\r\n");
-
-            //
-            fw.write("TRECHO_BT;\r\n");
-            fw.write("\r\n");
-
-            //
-            fw.write("PONTO_SERVICO_BT;\r\n");
-            fw.write("\r\n");
-
-            //
-            fw.write("CONSUMIDOR_BT;\r\n");
-            fw.write("\r\n");
-
-            //
-            fw.write("CONSUMIDOR_IP;\r\n");
-            fw.write("\r\n");
-
-            //
-            fw.write("CONSUMIDOR_MT;\r\n");
-            fw.write("\r\n");
-
-            //
-            fw.write("SOCO;\r\n");
-            fw.write("\r\n");
 
             //
             fw.write("END;\r\n");

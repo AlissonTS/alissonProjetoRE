@@ -5,14 +5,14 @@ package br.ufsm.ceesp.ceee.model;
  */
 public class Chave {
 
-            private Long id;
+            private String id;
             private TrechoRede trecho;
 
-            public Long getId() {
+            public String getId() {
                 return id;
             }
 
-            public void setId(Long id) {
+            public void setId(String id) {
                 this.id = id;
             }
 
@@ -22,11 +22,5 @@ public class Chave {
 
             public void setTrecho(TrechoRede trecho) {
                 this.trecho = trecho;
-            }
-
-            private static long ID = 1;
-
-            public static long getNextId() {
-                return ID++;
             }
 }
