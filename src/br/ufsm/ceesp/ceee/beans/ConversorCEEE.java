@@ -58,7 +58,10 @@ public class ConversorCEEE {
 
                 if (alimentador == null) {
                     alimentador = new Alimentador();
-                    alimentador.setNome(retorno[0] + "-" + retorno[1]);
+                    String nome = "SE " + retorno[0] + "-" + retorno[1];
+                    System.out.println(nome);
+                    alimentador.setNome(nome);
+                    System.out.println(alimentador.getNome());
                 }
                 Barra.ParCoordenadas coord_Fonte = new Barra.ParCoordenadas(new Float(retorno[2].replace(',', '.')), new Float(retorno[3].replace(',', '.')));
                 Barra.ParCoordenadas coord_Alvo = new Barra.ParCoordenadas(new Float(retorno[4].replace(',', '.')), new Float(retorno[5].replace(',', '.')));
@@ -98,6 +101,7 @@ public class ConversorCEEE {
 
                     String capac = retorno[27];
                     if(capac.length()>0){
+                        System.out.println("Entrou no capacitor");
                         Capacitor cp = new Capacitor();
 
                         cp.setBarra(barraAlvo);
@@ -155,6 +159,7 @@ public class ConversorCEEE {
                 if(contador==0) {
                     al.add(alimentador);
                     sub.add(subestacao);
+                    System.out.println(sub.get(0).getNome());
                     contador++;
                 }
 
@@ -221,8 +226,8 @@ public class ConversorCEEE {
             fw.write("VER;\r\n4.0;\r\n\r\n");
 
             fw.write("SE;\r\n");
-            fw.write(sub.get(0).getID()+";\t ;\t; "+sub.get(0).getNome()+";\t "+
-                    sub.get(0).getBarra().getParCoordenadas().getLatitude()+";\t"+sub.get(0).getBarra().getParCoordenadas().getLongitude() +";\t ;\t;\r\n");
+            fw.write(sub.get(0).getID()+";\t 0;\t 0; SE "+sub.get(0).getNome()+";\t"+
+                    sub.get(0).getBarra().getParCoordenadas().getLatitude()+";\t"+sub.get(0).getBarra().getParCoordenadas().getLongitude() +";\t SE0;\t 0;\r\n");
 
             fw.write("TRAFO_SE;\r\n");
             fw.write("1;\t;\t ;\t ;\t ;\t ;\t13.800; \t ;\t ;\t ;\t ;\t ;\t "+sub.get(0).getID()+";\r\n");
@@ -255,7 +260,7 @@ public class ConversorCEEE {
 
             fw.write("CAPACITOR;\r\n");
             for(int i=0; i<capacitor.size(); i++){
-                fw.write(capacitor.get(i).getID()+";  ;  ;  ; "+tr.get(i).getBarra().getId()+";  ; 1.200; 1.200; 1.200; 1.200;\r\n");
+                fw.write(capacitor.get(i).getID()+";  ;  ;  ; "+capacitor.get(i).getBarra().getId()+";  ; 1.200; 1.200; 1.200; 1.200;\r\n");
             }
             //
 
