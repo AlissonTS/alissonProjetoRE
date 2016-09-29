@@ -97,7 +97,7 @@ public class ConversorCEEE {
                     }
 
                     String capac = retorno[27];
-                    if(barraAlvo ==  null){
+                    if(capac.length()>0){
                         Capacitor cp = new Capacitor();
 
                         cp.setBarra(barraAlvo);
