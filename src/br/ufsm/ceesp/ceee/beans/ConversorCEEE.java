@@ -207,6 +207,7 @@ public class ConversorCEEE {
         }
 
         try {
+            // Começo da escrita do arquivo.
             FileWriter fw = new FileWriter(saida);
 
             GeradorData gd = new GeradorData();
