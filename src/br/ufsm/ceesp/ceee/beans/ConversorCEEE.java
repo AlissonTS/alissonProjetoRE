@@ -6,7 +6,10 @@ import br.ufsm.ceesp.ceee.util.LeitorCSV;
 
 import javax.swing.*;
 import java.io.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 public class ConversorCEEE {
@@ -58,10 +61,7 @@ public class ConversorCEEE {
 
                 if (alimentador == null) {
                     alimentador = new Alimentador();
-                    String nome = "SE " + retorno[0] + "-" + retorno[1];
-                    System.out.println(nome);
-                    alimentador.setNome(nome);
-                    System.out.println(alimentador.getNome());
+                    alimentador.setNome("SE " + retorno[0] + "-" + retorno[1] + "");
                 }
                 Barra.ParCoordenadas coord_Fonte = new Barra.ParCoordenadas(new Float(retorno[2].replace(',', '.')), new Float(retorno[3].replace(',', '.')));
                 Barra.ParCoordenadas coord_Alvo = new Barra.ParCoordenadas(new Float(retorno[4].replace(',', '.')), new Float(retorno[5].replace(',', '.')));
@@ -76,7 +76,7 @@ public class ConversorCEEE {
 
                 if(subestacao == null){
                     subestacao = new Subestacao();
-                    subestacao.setNome(retorno[0]);
+                    subestacao.setNome("SE "+ retorno[0]);
                     subestacao.setBarra(barraFonte);
                 }
 
@@ -101,7 +101,6 @@ public class ConversorCEEE {
 
                     String capac = retorno[27];
                     if(capac.length()>0){
-                        System.out.println("Entrou no capacitor");
                         Capacitor cp = new Capacitor();
 
                         cp.setBarra(barraAlvo);
@@ -156,13 +155,6 @@ public class ConversorCEEE {
 
                 alimentador.getTrechos().put(trehoRede.getId(), trehoRede);
 
-                if(contador==0) {
-                    al.add(alimentador);
-                    sub.add(subestacao);
-                    System.out.println(sub.get(0).getNome());
-                    contador++;
-                }
-
                 trecho.add(trehoRede); // ADD Trecho
                 laco++;
 
@@ -202,6 +194,9 @@ public class ConversorCEEE {
             retorno = csv.nextLine(true);
         }while(retorno != null);
 
+        al.add(alimentador);
+        sub.add(subestacao);
+
         File saida = new File(f.getAbsolutePath() + ".ceee.exp");
         if(!saida.exists()) {
             saida.createNewFile();
@@ -225,23 +220,27 @@ public class ConversorCEEE {
 
             fw.write("VER;\r\n4.0;\r\n\r\n");
 
+            NumberFormat nf = new DecimalFormat("#0.0");
+
             fw.write("SE;\r\n");
-            fw.write(sub.get(0).getID()+";\t 0;\t 0; SE "+sub.get(0).getNome()+";\t"+
-                    sub.get(0).getBarra().getParCoordenadas().getLatitude()+";\t"+sub.get(0).getBarra().getParCoordenadas().getLongitude() +";\t SE0;\t 0;\r\n");
+            fw.write("\t"+sub.get(0).getID()+";\t 0;\t 0; " +sub.get(0).getNome()+";\t"+
+                    nf.format(sub.get(0).getBarra().getParCoordenadas().getLatitude())+";\t"+nf.format(sub.get(0).getBarra().getParCoordenadas().getLongitude()) +";\t SE0;\t 0;\r\n");
 
             fw.write("TRAFO_SE;\r\n");
-            fw.write("1;\t;\t ;\t ;\t ;\t ;\t13.800; \t ;\t ;\t ;\t ;\t ;\t "+sub.get(0).getID()+";\r\n");
+            fw.write("\t1;\t0;\t 0,0;\t 0,0;\t 0,0;\t 0,0;\t13,800; \t 0,0;\t 0,0;\t 0,0;\t 0,0;\t 0,0;\t "+sub.get(0).getID()+";\r\n");
 
             fw.write("CIRCUITO;\r\n");
-            fw.write(al.get(0).getNome()+";\t\t ;\t\t ;\t\t "+sub.get(0).getID()+";\t\t 1;\t\t 13.000;\t\t ;\r\n");
+            fw.write("\t"+al.get(0).getNome()+";\t\t 0;\t\t 0;\t\t "+sub.get(0).getID()+";\t\t 1;\t\t 13,800;\t\t 0;\r\n");
 
             //LISTA DE BARRAS
+            //NumberFormat nf = new DecimalFormat("#0.0");
+            // DecimalFormat nf = new DecimalFormat("#0.0");
 
             fw.write("BARRA;\r\n");
 
             for(int i=0; i<barra.size(); i++){
-                fw.write(barra.get(i).getId()+";\t\t "+barra.get(i).getParCoordenadas().getLatitude()+"; "
-                        +barra.get(i).getParCoordenadas().getLongitude()+"; \r\n");
+                fw.write(barra.get(i).getId()+";\t\t ; "+nf.format(barra.get(i).getParCoordenadas().getLatitude())+"; "
+                        +nf.format(barra.get(i).getParCoordenadas().getLongitude())+"; \r\n");
             }
 
             //
@@ -253,14 +252,14 @@ public class ConversorCEEE {
             for(int i=0; i<trecho.size(); i++){
                 fw.write(trecho.get(i).getId()+";\t ;\t ;\t ;\t "+trecho.get(i).getBarraInicial().getId()+"; "
                         +trecho.get(i).getBarraFinal().getId()+";\t ;\t ;\t "
-                        +trecho.get(i).getCondutor()+";\t ;\t ;\t "+trecho.get(i).getQtdFases()+"; "
-                        +trecho.get(i).getComprimento()+"; ; \r\n");
+                        +trecho.get(i).getCondutor()+";\t ;\t ;\t "+trecho.get(i).getQtdFases()+"; \t"
+                        +nf.format(trecho.get(i).getComprimento())+"; \t; \r\n");
             }
             //
 
             fw.write("CAPACITOR;\r\n");
             for(int i=0; i<capacitor.size(); i++){
-                fw.write(capacitor.get(i).getID()+";  ;  ;  ; "+capacitor.get(i).getBarra().getId()+";  ; 1.200; 1.200; 1.200; 1.200;\r\n");
+                fw.write(capacitor.get(i).getID()+";  ;  ;  ; "+capacitor.get(i).getBarra().getId()+";  ; 1,200; 1,200; 1,200; 1,200;\r\n");
             }
             //
 
