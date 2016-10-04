@@ -252,7 +252,7 @@ public class ConversorCEEE {
 
             for(int i=0; i<trecho.size(); i++){
                 fw.write(trecho.get(i).getId()+";\t ;\t ;\t ;\t "+trecho.get(i).getBarraInicial().getId()+"; "
-                        +trecho.get(i).getBarraFinal().getId()+";\t ;\t ;\t "
+                        +trecho.get(i).getBarraFinal().getId()+";\t ;\t "
                         +trecho.get(i).getCondutor()+";\t ;\t ;\t "+trecho.get(i).getQtdFases()+"; \t"
                         +nf.format(trecho.get(i).getComprimento())+"; \t; \r\n");
             }
