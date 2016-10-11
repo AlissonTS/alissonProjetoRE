@@ -131,10 +131,10 @@ public class ConversorCEEE {
                 }
                 trehoRede.setCondutor(trehoRede.getQtdFases() + "#" + retorno[12] + material);
 
-                String ch = retorno[25].replace(" ", "").trim();
+                String ch = retorno[25].replaceAll("[^0-9]*", "" );
                 if(ch.length()>0){
                     Chave chave = new Chave();
-                    chave.setId(ch);
+                    chave.setId(new Long(ch));
                     chave.setTrecho(trehoRede);
 
                     trehoRede.setChave(chave);
@@ -224,24 +224,25 @@ public class ConversorCEEE {
             NumberFormat nf = new DecimalFormat("#0.0");
 
             fw.write("SE;\r\n");
-            fw.write("\t"+sub.get(0).getID()+";\t 0;\t 0; " +sub.get(0).getNome()+";\t"+
-                    nf.format(sub.get(0).getBarra().getParCoordenadas().getLatitude())+";\t"+nf.format(sub.get(0).getBarra().getParCoordenadas().getLongitude()) +";\t SE0;\t 0;\r\n");
+            fw.write(""+sub.get(0).getID()+"; 0;0; " +sub.get(0).getNome()+";"+
+                    nf.format(sub.get(0).getBarra().getParCoordenadas().getLatitude())+";"+nf.format(sub.get(0).getBarra().getParCoordenadas().getLongitude()) +"; SE0; 0;\r\n");
 
             fw.write("TRAFO_SE;\r\n");
-            fw.write("\t1;\t0;\t 0,0;\t 0,0;\t 0,0;\t 0,0;\t13,800; \t 0,0;\t 0,0;\t 0,0;\t 0,0;\t 0,0;\t "+sub.get(0).getID()+";\r\n");
+            fw.write("1;0;0,0;0,0;0,0;0,0;13,800;0,0;0,0;0,0;0,0;0,0;"+sub.get(0).getID()+";\r\n");
 
             fw.write("CIRCUITO;\r\n");
-            fw.write("\t"+al.get(0).getNome()+";\t\t 0;\t\t 0;\t\t "+sub.get(0).getID()+";\t\t 1;\t\t 13,800;\t\t 0;\r\n");
+            fw.write(al.get(0).getNome()+";0; 0;"+sub.get(0).getID()+";1;13,800;0;\r\n");
 
             //LISTA DE BARRAS
             //NumberFormat nf = new DecimalFormat("#0.0");
             // DecimalFormat nf = new DecimalFormat("#0.0");
 
+
             fw.write("BARRA;\r\n");
 
             for(int i=0; i<barra.size(); i++){
-                fw.write(barra.get(i).getId()+";\t\t ; "+nf.format(barra.get(i).getParCoordenadas().getLatitude())+"; "
-                        +nf.format(barra.get(i).getParCoordenadas().getLongitude())+"; \r\n");
+                fw.write(barra.get(i).getId()+";; "+nf.format(barra.get(i).getParCoordenadas().getLatitude())+"; "
+                        +nf.format(barra.get(i).getParCoordenadas().getLongitude())+";\r\n");
             }
 
             //
@@ -251,37 +252,53 @@ public class ConversorCEEE {
             fw.write("TRECHO;\r\n");
 
             for(int i=0; i<trecho.size(); i++){
-                fw.write(trecho.get(i).getId()+";\t ;\t ;\t ;\t "+trecho.get(i).getBarraInicial().getId()+"; "
-                        +trecho.get(i).getBarraFinal().getId()+";\t ;\t "
-                        +trecho.get(i).getCondutor()+";\t ;\t ;\t "+trecho.get(i).getQtdFases()+"; \t"
-                        +nf.format(trecho.get(i).getComprimento())+"; \t; \r\n");
+                fw.write(trecho.get(i).getId()+";\t 0; 0; ;"+trecho.get(i).getBarraInicial().getId()+"; "
+                        +trecho.get(i).getBarraFinal().getId()+"; 0;"
+                        +trecho.get(i).getCondutor()+"; ; ; DEF; "+nf.format(trecho.get(i).getComprimento())+"; ;\r\n");
             }
             //
-
             fw.write("CAPACITOR;\r\n");
             for(int i=0; i<capacitor.size(); i++){
-                fw.write(capacitor.get(i).getID()+";  ;  ;  ; "+capacitor.get(i).getBarra().getId()+";  ; 1,200; 1,200; 1,200; 1,200;\r\n");
+                fw.write(capacitor.get(i).getID()+";  1; PAL - "+capacitor.get(i).getID()+"; 0; "+capacitor.get(i).getBarra().getId()+";  0; 0,000; 1,200; 1,200; 1,200; 1,200;\r\n");
             }
             //
 
             fw.write("INSTAL_TRAFO;\r\n");
             for(int i=0; i<tr.size(); i++){
-                fw.write(tr.get(i).getId()+";  ;  ;  ; "+tr.get(i).getBarra().getId()+";  ;  ;  ;  ;  ;  ;  ;  ;\r\n");
+                // 2699;   9119;URU - 6170          ;1; 20592;    0;EP  ;MON ;    10,000;   220,000;0;D   ;  45035750;         0;        CLIENTE;  44213223;Uruguaiana 1                            ;1;0;0;1;
+                fw.write(tr.get(i).getId()+"; 0; PAL - "+tr.get(i).getId()+";  1; "+tr.get(i).getBarra().getId()+";  0;  EP;  TRI;  10,000;   220,000;0; D   ;  0;         0;        CEEE ;  0; PAL 14; 0;0;0;0;\r\n");
             }
             //
 
             fw.write("CHAVE;\r\n");
             for(int i=0; i<cha.size(); i++){
-                fw.write(cha.get(i).getId()+";  ;  ; "+cha.get(i).getTrecho().getId()+"; FU;  ;  ;  ;  ;  ;  ;  ;  ;  ;  ;\r\n");
+                //  1046;   8010;URU - 6004          ;  44025;FUSI;1;    15,000;83293670  ;                 Chave Fusivel;     0,000;0;     0,000;          ;     0,000;          ;    0;    0;MCH;               ;* K-010        ;    10,000;
+                // fw.write(cha.get(i).getId()+";  0;  PAL - "+cha.get(i).getId()+"; "+cha.get(i).getTrecho().getId()+"; FU;  0; 0,000  ;                 0;     0,000;0;     0,000;         0,0 ;     0,000;       0,0   ;    0;   0;               ; 0        ;    10,000;\r\n");
+                fw.write(cha.get(i).getId()+";   0; PAL - "+cha.get(i).getId()+";  "+cha.get(i).getTrecho().getId()+"; FU; 0;  0,000; 0  ;                 Chave Fusivel;     0,000;0;     0,000;          ;     0,000;          ;    0;    0;MCH;               ;* K-010        ;    00,000;\r\n");
             }
             //
 
             fw.write("REGULADOR;\r\n");
             for(int i=0; i<reg.size(); i++){
-                fw.write(reg.get(i).getId()+";  ;  ;  ; "+reg.get(i).getTrecho().getId()+";  ;  ;  ;  ;  ;  ;\r\n");
+                fw.write(reg.get(i).getId()+";  0;  ;  ; "+reg.get(i).getTrecho().getId()+";  0,000 ;  0,000;  0,000;  1;  1;  1;\r\n");
             }
-
             //
+
+            /* fw.write("CUST_CLASS;\r\n\r\n");
+            fw.write("DMD;\r\n\r\n");
+            fw.write("TRAFOL;\r\n\r\n");
+            fw.write("CAPS;\r\n\r\n");
+            fw.write("ET;\r\n\r\n");
+            fw.write("BARRA_BT;\r\n\r\n");
+            fw.write("TRECHO_BT;\r\n\r\n");
+            fw.write("PONTO_SERVICO_BT;\r\n\r\n");
+            fw.write("CONSUMIDOR_BT;\r\n\r\n");
+            fw.write("CONSUMIDOR_IP;\r\n\r\n");
+            fw.write("REGULADOR;\r\n\r\n");
+            fw.write("ABC;\r\n");
+            fw.write("SOCO;\r\n\r\n");
+            */
+
             fw.write("END;\r\n");
 
             fw.close();
