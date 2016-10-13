@@ -3,13 +3,14 @@ package br.ufsm.ceesp.ceee.beans;
 import br.ufsm.ceesp.ceee.model.*;
 import br.ufsm.ceesp.ceee.util.GeradorData;
 import br.ufsm.ceesp.ceee.util.LeitorCSV;
+import uk.me.jstott.jcoord.LatLng;
+import uk.me.jstott.jcoord.UTMRef;
 
 import javax.swing.*;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 
 
 public class ConversorCEEE {
@@ -34,7 +35,7 @@ public class ConversorCEEE {
         ArrayList<Alimentador> al = new ArrayList<Alimentador>();
         ArrayList<Subestacao> sub = new ArrayList<Subestacao>();
         ArrayList<TrechoRede> trecho = new ArrayList<TrechoRede>();
-        ArrayList<Barra> barra = new ArrayList<Barra>();
+        ArrayList<Barra> barras = new ArrayList<Barra>();
         ArrayList<Transformador> tr = new ArrayList<Transformador>();
         ArrayList<Chave> cha = new ArrayList<Chave>();
         ArrayList<Regulador> reg = new ArrayList<Regulador>();
@@ -162,8 +163,8 @@ public class ConversorCEEE {
                     br = new ArrayList<Long>();
                     br.add(barraFonte.getId());
                     br.add(barraAlvo.getId());
-                    barra.add(barraFonte);
-                    barra.add(barraAlvo);
+                    barras.add(barraFonte);
+                    barras.add(barraAlvo);
                 }
                 else{
                     // Verificação se Barra já está adicionada
@@ -182,11 +183,11 @@ public class ConversorCEEE {
                     }
                     if(contF==0){
                         br.add(barraFonte.getId());
-                        barra.add(barraFonte);
+                        barras.add(barraFonte);
                     }
                     if(contA==0){
                         br.add(barraAlvo.getId());
-                        barra.add(barraAlvo);
+                        barras.add(barraAlvo);
                     }
                 }
 
@@ -222,6 +223,7 @@ public class ConversorCEEE {
             fw.write("VER;\r\n4.0;\r\n\r\n");
 
             NumberFormat nf = new DecimalFormat("#0.0");
+            NumberFormat nf3 = new DecimalFormat("#0.000");
 
             fw.write("SE;\r\n");
             fw.write(""+sub.get(0).getID()+"; 0;0; " +sub.get(0).getNome()+";"+
@@ -240,9 +242,13 @@ public class ConversorCEEE {
 
             fw.write("BARRA;\r\n");
 
-            for(int i=0; i<barra.size(); i++){
-                fw.write(barra.get(i).getId()+";; "+nf.format(barra.get(i).getParCoordenadas().getLatitude())+"; "
-                        +nf.format(barra.get(i).getParCoordenadas().getLongitude())+";\r\n");
+            for (Barra barra : barras) {
+                UTMRef utm = new UTMRef(22, 'J', barra.getParCoordenadas().getLatitude(), barra.getParCoordenadas().getLongitude());
+                //utm.setDatum(ETRF89Datum.getInstance());
+                LatLng latlng = utm.toLatLng();
+
+                fw.write(barra.getId()+";; " + Double.toString(latlng.getLatitude()).replace('.', ',') + "; "
+                        + Double.toString(latlng.getLongitude()).replace('.', ',') +";\r\n");
             }
 
             //
