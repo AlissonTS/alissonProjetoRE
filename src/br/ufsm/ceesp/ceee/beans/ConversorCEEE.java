@@ -249,6 +249,7 @@ public class ConversorCEEE {
             for (Barra barra : barras) {
                 utm = new UTMRef(22, 'J', barra.getParCoordenadas().getLatitude(), barra.getParCoordenadas().getLongitude());
                 //utm.setDatum(ETRF89Datum.getInstance());
+                latlng = utm.toLatLng();
 
                 fw.write(barra.getId()+";; " + Double.toString(latlng.getLatitude()).replace('.', ',') + "; "
                         + Double.toString(latlng.getLongitude()).replace('.', ',') +";\r\n");
