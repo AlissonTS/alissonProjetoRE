@@ -225,9 +225,13 @@ public class ConversorCEEE {
             NumberFormat nf = new DecimalFormat("#0.0");
             NumberFormat nf3 = new DecimalFormat("#0.000");
 
+            UTMRef utm = new UTMRef(22, 'J', sub.get(0).getBarra().getParCoordenadas().getLatitude(), sub.get(0).getBarra().getParCoordenadas().getLongitude());
+            //utm.setDatum(ETRF89Datum.getInstance());
+            LatLng latlng = utm.toLatLng();
+
             fw.write("SE;\r\n");
-            fw.write(""+sub.get(0).getID()+"; 0;0; " +sub.get(0).getNome()+";"+
-                    nf.format(sub.get(0).getBarra().getParCoordenadas().getLatitude())+";"+nf.format(sub.get(0).getBarra().getParCoordenadas().getLongitude()) +"; SE0; 0;\r\n");
+            fw.write(""+sub.get(0).getID()+"; 0;0; " +sub.get(0).getNome()+";"+ Double.toString(latlng.getLatitude()).replace('.', ',') + "; "
+                    + Double.toString(latlng.getLongitude()).replace('.', ',') +"; SE0; 0;\r\n");
 
             fw.write("TRAFO_SE;\r\n");
             fw.write("1;0;0,0;0,0;0,0;0,0;13,800;0,0;0,0;0,0;0,0;0,0;"+sub.get(0).getID()+";\r\n");
@@ -243,9 +247,8 @@ public class ConversorCEEE {
             fw.write("BARRA;\r\n");
 
             for (Barra barra : barras) {
-                UTMRef utm = new UTMRef(22, 'J', barra.getParCoordenadas().getLatitude(), barra.getParCoordenadas().getLongitude());
+                utm = new UTMRef(22, 'J', barra.getParCoordenadas().getLatitude(), barra.getParCoordenadas().getLongitude());
                 //utm.setDatum(ETRF89Datum.getInstance());
-                LatLng latlng = utm.toLatLng();
 
                 fw.write(barra.getId()+";; " + Double.toString(latlng.getLatitude()).replace('.', ',') + "; "
                         + Double.toString(latlng.getLongitude()).replace('.', ',') +";\r\n");
