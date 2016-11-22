@@ -1,6 +1,6 @@
 package br.ufsm.ceesp.ceee.beans;
 
-import br.ufsm.ceesp.ceee.model.*;
+import br.ufsm.ceesp.ceee.model.importador.*;
 import br.ufsm.ceesp.ceee.util.GeradorData;
 import br.ufsm.ceesp.ceee.util.LeitorCSV;
 import uk.me.jstott.jcoord.LatLng;
