@@ -38,6 +38,15 @@ public class Transformador implements Serializable {
     private transient Integer tempNumConsumidores;
     private Integer anoSimulado;
     private Integer patamarSimulado;
+    private Collection<ClienteCEEE> clientesCEEE;
+
+    public Collection<ClienteCEEE> getClientesCEEE() {
+        return clientesCEEE;
+    }
+
+    public void setClientesCEEE(Collection<ClienteCEEE> clientesCEEE) {
+        this.clientesCEEE = clientesCEEE;
+    }
 
     class ComparatorMedidas implements Comparator<MedidaEletrica>, Serializable {
         @Override
