@@ -40,6 +40,7 @@ public class Transformador implements Serializable {
     private Integer patamarSimulado;
     private Collection<ClienteCEEE> clientesCEEE;
 
+    @InformacoesSilas(nomeTipoPropriedade = "OUTConsumid")
     public Collection<ClienteCEEE> getClientesCEEE() {
         return clientesCEEE;
     }
